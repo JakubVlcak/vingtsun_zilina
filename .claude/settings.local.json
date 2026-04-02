@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo:*)",
+      "Bash(sanity --version)",
+      "Bash(npm install:*)",
+      "Bash(sanity init:*)",
+      "Bash(sanity projects:*)"
+    ]
+  }
+}
