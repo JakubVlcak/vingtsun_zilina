@@ -1,0 +1,31 @@
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+@keyframes smokeRise {
+  0%   { transform: translateY(0)    translateX(0)    scale(1);   opacity: 0; }
+  15%  { opacity: 0.18; }
+  85%  { opacity: 0.08; }
+  100% { transform: translateY(-160px) translateX(20px)  scale(1.8); opacity: 0; }
+}
+
+@keyframes smokeRise2 {
+  0%   { transform: translateY(0)    translateX(0)    scale(1);   opacity: 0; }
+  15%  { opacity: 0.14; }
+  85%  { opacity: 0.06; }
+  100% { transform: translateY(-140px) translateX(-30px) scale(2);   opacity: 0; }
+}
+
+@keyframes smokeRise3 {
+  0%   { transform: translateY(0)    translateX(0)    scale(1);   opacity: 0; }
+  20%  { opacity: 0.12; }
+  80%  { opacity: 0.07; }
+  100% { transform: translateY(-180px) translateX(10px)  scale(1.6); opacity: 0; }
+}
+
+body {
+  font-family: Inter, system-ui, sans-serif;
+}
