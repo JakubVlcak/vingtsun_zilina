@@ -22,7 +22,7 @@ function Navbar() {
           <img src={logo} alt="WingTsun Systém" className="h-20 w-auto" />
           <span className="font-display font-bold uppercase tracking-tighter text-white text-4xl">Umenie Boja</span>
         </Link>
-        <div className="hidden md:flex items-center space-x-12">
+        <div className="flex items-center space-x-12">
           <Link className={linkClass('/')} to="/">Info</Link>
           <Link className={linkClass('/wingtsun')} to="/wingtsun">WingTsun systémy</Link>
           <Link className={linkClass('/clanky')} to="/clanky">Články</Link>
