@@ -8,7 +8,7 @@ function Clanky() {
 
   useEffect(() => {
     client
-      .fetch(`*[_type == "clanek"] | order(datum desc) {
+      .fetch(`*[_type == "clanek" && defined(slug.current)] | order(datum desc) {
         title, slug, datum, perex,
         "imageUrl": obrazok.asset->url
       }`)
