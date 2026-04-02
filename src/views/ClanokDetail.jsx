@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PortableText } from '@portabletext/react';
-import client, { urlFor } from '../sanityClient';
+import client from '../sanityClient';
 
 function ClanokDetail() {
   const { slug } = useParams();
@@ -11,7 +11,8 @@ function ClanokDetail() {
   useEffect(() => {
     client
       .fetch(`*[_type == "clanek" && slug.current == $slug][0] {
-        title, datum, perex, obsah, obrazok
+        title, datum, perex, obsah,
+        "imageUrl": obrazok.asset->url
       }`, { slug })
       .then((data) => { setClanek(data); setLoading(false); });
   }, [slug]);
@@ -25,8 +26,8 @@ function ClanokDetail() {
         &larr; Vsetky clanky
       </Link>
 
-      {clanek.obrazok && (
-        <img src={urlFor(clanek.obrazok).width(1200).url()} alt={clanek.title} className="w-full max-h-[500px] object-cover mb-12" />
+      {clanek.imageUrl && (
+        <img src={clanek.imageUrl} alt={clanek.title} className="w-full max-h-[500px] object-cover mb-12" />
       )}
 
       <span className="font-label text-xs text-tertiary uppercase tracking-widest mb-4 block">{clanek.datum}</span>

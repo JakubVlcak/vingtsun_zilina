@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import client, { urlFor } from '../sanityClient';
+import client from '../sanityClient';
 
 function Clanky() {
   const [clanky, setClanky] = useState([]);
@@ -9,7 +9,8 @@ function Clanky() {
   useEffect(() => {
     client
       .fetch(`*[_type == "clanek"] | order(datum desc) {
-        title, slug, datum, perex, obrazok
+        title, slug, datum, perex,
+        "imageUrl": obrazok.asset->url
       }`)
       .then((data) => { setClanky(data); setLoading(false); });
   }, []);
@@ -36,9 +37,9 @@ function Clanky() {
               to={`/clanky/${c.slug.current}`}
               className="p-10 border-r border-b border-outline-variant/20 group hover:bg-surface-container transition-colors duration-300 block"
             >
-              {c.obrazok && (
+              {c.imageUrl && (
                 <img
-                  src={urlFor(c.obrazok).width(600).url()}
+                  src={c.imageUrl}
                   alt={c.title}
                   className="w-full h-48 object-cover mb-6 grayscale group-hover:grayscale-0 transition-all duration-500"
                 />
