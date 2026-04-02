@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PortableText } from '@portabletext/react';
-import client from '../sanityClient';
+import client, { urlFor } from '../sanityClient';
 
 function ClanokDetail() {
   const { slug } = useParams();
@@ -41,8 +41,21 @@ function ClanokDetail() {
         </p>
       )}
 
-      <div className="font-body text-lg text-on-surface-variant leading-relaxed max-w-3xl prose prose-invert">
-        <PortableText value={clanek.obsah} />
+      <div className="font-body text-lg text-on-surface-variant leading-relaxed max-w-3xl">
+        <PortableText
+          value={clanek.obsah}
+          components={{
+            types: {
+              image: ({ value }) => (
+                <img
+                  src={urlFor(value).width(900).url()}
+                  alt={value.caption || ''}
+                  className="w-full my-8 object-cover"
+                />
+              ),
+            },
+          }}
+        />
       </div>
     </main>
   );
