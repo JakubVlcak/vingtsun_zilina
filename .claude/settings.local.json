@@ -5,7 +5,8 @@
       "Bash(sanity --version)",
       "Bash(npm install:*)",
       "Bash(sanity init:*)",
-      "Bash(sanity projects:*)"
+      "Bash(sanity projects:*)",
+      "Bash(sanity cors:*)"
     ]
   }
 }

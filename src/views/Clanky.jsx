@@ -20,7 +20,7 @@ function Clanky() {
       <div className="mb-20">
         <span className="font-label text-tertiary uppercase tracking-widest text-xs mb-4 block">Obsah</span>
         <h1 className="font-display text-6xl md:text-8xl font-bold uppercase tracking-tighter leading-none text-on-surface">
-          Clanky
+          Články
         </h1>
         <div className="w-24 h-1 bg-primary-container mt-6"></div>
       </div>
