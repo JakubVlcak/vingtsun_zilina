@@ -14,10 +14,49 @@ function useDropdown() {
   };
 }
 
+function WingtsunItem({ page, allPages, onClose }) {
+  const [subOpen, setSubOpen] = useState(false);
+  const timer = useRef(null);
+  const subpages = allPages.filter((p) => p.parentId === page._id);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => { clearTimeout(timer.current); setSubOpen(true); }}
+      onMouseLeave={() => { timer.current = setTimeout(() => setSubOpen(false), 150); }}
+    >
+      <Link
+        to={`/wingtsun/${page.slug.current}`}
+        className="flex items-center justify-between px-6 py-3 font-headline text-sm text-[#e7bdb6] hover:text-white hover:bg-[#1a1a1a] transition-colors duration-200 border-b border-[#353534]/20 last:border-0 tracking-tight"
+        onClick={onClose}
+      >
+        {page.title}
+        {subpages.length > 0 && (
+          <span className="ml-4 text-[#666] text-xs">›</span>
+        )}
+      </Link>
+      {subOpen && subpages.length > 0 && (
+        <div className="absolute left-full top-0 bg-[#0e0e0e]/95 backdrop-blur-sm border border-[#353534]/30 min-w-[240px] shadow-2xl">
+          {subpages.map((sub) => (
+            <Link
+              key={sub.slug.current}
+              to={`/wingtsun/${sub.slug.current}`}
+              className="block px-6 py-3 font-headline text-sm text-[#e7bdb6] hover:text-white hover:bg-[#1a1a1a] transition-colors duration-200 border-b border-[#353534]/20 last:border-0 tracking-tight"
+              onClick={onClose}
+            >
+              {sub.title}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Navbar() {
   const { pathname } = useLocation();
   const [clanky, setClanky] = useState([]);
-  const [stranky, setStranky] = useState([]);
+  const [allStranky, setAllStranky] = useState([]);
   const clankyDD = useDropdown();
   const wingtsunDD = useDropdown();
 
@@ -26,9 +65,11 @@ function Navbar() {
       .fetch(`*[_type == "clanek" && defined(slug.current)] | order(datum desc) { title, slug, datum }`)
       .then(setClanky);
     client
-      .fetch(`*[_type == "stranka" && defined(slug.current) && !defined(rodic)] | order(poradie asc) { title, slug }`)
-      .then(setStranky);
+      .fetch(`*[_type == "stranka" && defined(slug.current)] | order(poradie asc) { _id, title, slug, "parentId": rodic._ref }`)
+      .then(setAllStranky);
   }, []);
+
+  const topLevel = allStranky.filter((s) => !s.parentId);
 
   const linkClass = (path) =>
     pathname === path
@@ -41,9 +82,6 @@ function Navbar() {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const dropdownClass = "absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-[#0e0e0e]/95 backdrop-blur-sm border border-[#353534]/30 min-w-[280px] shadow-2xl";
-  const dropdownItemClass = "block px-6 py-3 font-headline text-sm text-[#e7bdb6] hover:text-white hover:bg-[#1a1a1a] transition-colors duration-200 border-b border-[#353534]/20 last:border-0 tracking-tight";
-
   return (
     <nav className="fixed top-0 left-0 right-0 bg-[#0e0e0e]/90 backdrop-blur-sm z-50 border-b border-[#353534]/10">
       <div className="flex justify-between items-center w-full px-8 py-6 max-w-screen-2xl mx-auto">
@@ -53,24 +91,29 @@ function Navbar() {
         </Link>
         <div className="flex items-center space-x-12">
           <Link className={linkClass('/')} to="/">Info</Link>
+
           <div className="relative" onMouseEnter={wingtsunDD.onMouseEnter} onMouseLeave={wingtsunDD.onMouseLeave}>
             <span className={`${linkClass('/wingtsun')} cursor-pointer`}>WingTsun systémy</span>
-            {wingtsunDD.open && stranky.length > 0 && (
-              <div className={dropdownClass}>
-                {stranky.map((s) => (
-                  <Link key={s.slug.current} to={`/wingtsun/${s.slug.current}`} className={dropdownItemClass} onClick={wingtsunDD.close}>
-                    {s.title}
-                  </Link>
+            {wingtsunDD.open && topLevel.length > 0 && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-[#0e0e0e]/95 backdrop-blur-sm border border-[#353534]/30 min-w-[280px] shadow-2xl">
+                {topLevel.map((s) => (
+                  <WingtsunItem key={s._id} page={s} allPages={allStranky} onClose={wingtsunDD.close} />
                 ))}
               </div>
             )}
           </div>
+
           <div className="relative" onMouseEnter={clankyDD.onMouseEnter} onMouseLeave={clankyDD.onMouseLeave}>
             <Link className={linkClass('/clanky')} to="/clanky">Články</Link>
             {clankyDD.open && clanky.length > 0 && (
-              <div className={dropdownClass}>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-[#0e0e0e]/95 backdrop-blur-sm border border-[#353534]/30 min-w-[280px] shadow-2xl">
                 {clanky.map((c) => (
-                  <Link key={c.slug.current} to={`/clanky/${c.slug.current}`} className={dropdownItemClass} onClick={clankyDD.close}>
+                  <Link
+                    key={c.slug.current}
+                    to={`/clanky/${c.slug.current}`}
+                    className="block px-6 py-3 font-headline text-sm text-[#e7bdb6] hover:text-white hover:bg-[#1a1a1a] transition-colors duration-200 border-b border-[#353534]/20 last:border-0 tracking-tight"
+                    onClick={clankyDD.close}
+                  >
                     {c.title}
                     {c.datum && <span className="block font-label text-xs text-[#666] mt-0.5">{c.datum}</span>}
                   </Link>
