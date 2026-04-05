@@ -11,11 +11,18 @@ export default defineType({
       options: { source: 'title', maxLength: 96 },
     }),
     defineField({
+      name: 'sekcia',
+      title: 'Navigačná sekcia',
+      type: 'reference',
+      to: [{ type: 'navSekcia' }],
+      description: 'Do ktorej sekcie menu táto stránka patrí.',
+    }),
+    defineField({
       name: 'rodic',
       title: 'Rodičovská stránka',
       type: 'reference',
       to: [{ type: 'stranka' }],
-      description: 'Nechaj prázdne pre stránky prvej úrovne (napr. pod WingTsun systémy). Vyber rodiča pre podstránky.',
+      description: 'Nechaj prázdne pre stránky prvej úrovne. Vyber rodiča pre podstránky.',
     }),
     defineField({ name: 'poradie', title: 'Poradie zoradenia', type: 'number' }),
     defineField({ name: 'perex', title: 'Krátky popis', type: 'text', rows: 3 }),
@@ -34,9 +41,10 @@ export default defineType({
     }),
   ],
   preview: {
-    select: { title: 'title', subtitle: 'rodic.title' },
-    prepare({ title, subtitle }) {
-      return { title, subtitle: subtitle ? `Podstránka: ${subtitle}` : 'Hlavná stránka' }
+    select: { title: 'title', sekcia: 'sekcia.title', rodic: 'rodic.title' },
+    prepare({ title, sekcia, rodic }) {
+      const sub = rodic ? `Podstránka: ${rodic}` : sekcia ? `Sekcia: ${sekcia}` : ''
+      return { title, subtitle: sub }
     },
   },
 })

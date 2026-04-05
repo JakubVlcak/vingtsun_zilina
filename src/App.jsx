@@ -14,7 +14,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/clanky" element={<Clanky />} />
         <Route path="/clanky/:slug" element={<ClanokDetail />} />
-        <Route path="/wingtsun/:slug" element={<StrankaDetail />} />
+        <Route path="/s/:sekcia/:slug" element={<StrankaDetail />} />
       </Routes>
       <Footer />
     </HashRouter>

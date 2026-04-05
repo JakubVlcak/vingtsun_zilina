@@ -16,7 +16,7 @@ const portableComponents = {
 };
 
 function StrankaDetail() {
-  const { slug } = useParams();
+  const { sekcia, slug } = useParams();
   const [stranka, setStranka] = useState(null);
   const [podstranky, setPodstranky] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,8 @@ function StrankaDetail() {
       .fetch(
         `*[_type == "stranka" && slug.current == $slug][0] {
           title, slug, perex, obsah,
-          "rodic": rodic->{ title, slug }
+          "rodic": rodic->{ title, slug },
+          "sekcia": sekcia->{ title, slug }
         }`,
         { slug }
       )
@@ -47,11 +48,15 @@ function StrankaDetail() {
   if (loading) return <main className="pt-48 px-8 text-on-surface-variant">Načítavam...</main>;
   if (!stranka) return <main className="pt-48 px-8 text-on-surface-variant">Stránka nenájdená.</main>;
 
+  const backTo = stranka.rodic
+    ? `/s/${sekcia}/${stranka.rodic.slug.current}`
+    : null;
+
   return (
     <main className="pt-40 pb-32 px-8 md:px-16 max-w-screen-lg mx-auto">
-      {stranka.rodic && (
+      {backTo && (
         <Link
-          to={`/wingtsun/${stranka.rodic.slug.current}`}
+          to={backTo}
           className="font-label text-xs uppercase tracking-widest text-[#be0000] hover:text-white transition-colors mb-6 block"
         >
           ← {stranka.rodic.title}
@@ -79,7 +84,7 @@ function StrankaDetail() {
             {podstranky.map((p) => (
               <Link
                 key={p.slug.current}
-                to={`/wingtsun/${p.slug.current}`}
+                to={`/s/${sekcia}/${p.slug.current}`}
                 className="block p-6 border border-[#353534]/30 hover:border-[#be0000]/50 transition-colors group"
               >
                 <span className="font-headline font-bold uppercase tracking-tight text-on-surface group-hover:text-[#be0000] transition-colors">
