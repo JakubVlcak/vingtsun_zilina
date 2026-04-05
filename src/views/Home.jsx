@@ -33,13 +33,14 @@ function Home() {
       ))}
 
       {/* Hero */}
-      <section className="px-8 md:px-16 mb-24 max-w-screen-2xl mx-auto relative overflow-hidden">
-       
-        <div className="flex flex-col md:flex-row items-end justify-between gap-12 relative z-10">
+      <section className="pt-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-no-repeat w-full" style={{ backgroundImage: `url(${bgImg})`, backgroundSize: '10%', backgroundPosition: 'center', opacity: 0.18 }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0e0e0e]" />
+        <div className="px-8 md:px-16 max-w-screen-2xl mx-auto flex flex-col md:flex-row items-end justify-between gap-12 relative z-10">
           <div className="max-w-2xl">
             <span className="font-label text-tertiary uppercase tracking-widest text-xs mb-4 block">Začnite dnes</span>
-            <h1 className="font-display font-headline text-6xl md:text-8xl font-bold tracking-tighter leading-none text-on-surface uppercase mb-8">
-              WingTsun <br /> <span className="text-primary-container">Zilina</span>
+            <h1 className="font-display  text-6xl md:text-8xl font-bold tracking-tighter leading-none text-on-surface uppercase mb-8 font-display">
+              WingTsun <br /> <span className="text-primary-container font-display">Žilina</span>
             </h1>
           </div>
           <p className="font-body text-xl md:text-2xl text-on-surface-variant max-w-md italic border-l-2 border-primary-container pl-6 pb-2">
