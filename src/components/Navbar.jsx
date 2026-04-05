@@ -3,16 +3,31 @@ import { useState, useEffect, useRef } from 'react';
 import logo from '../images/logo_2016.png';
 import client from '../sanityClient';
 
+function useDropdown() {
+  const [open, setOpen] = useState(false);
+  const timer = useRef(null);
+  return {
+    open,
+    onMouseEnter: () => { clearTimeout(timer.current); setOpen(true); },
+    onMouseLeave: () => { timer.current = setTimeout(() => setOpen(false), 150); },
+    close: () => setOpen(false),
+  };
+}
+
 function Navbar() {
   const { pathname } = useLocation();
   const [clanky, setClanky] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const closeTimer = useRef(null);
+  const [stranky, setStranky] = useState([]);
+  const clankyDD = useDropdown();
+  const wingtsunDD = useDropdown();
 
   useEffect(() => {
     client
       .fetch(`*[_type == "clanek" && defined(slug.current)] | order(datum desc) { title, slug, datum }`)
-      .then((data) => setClanky(data));
+      .then(setClanky);
+    client
+      .fetch(`*[_type == "stranka" && defined(slug.current) && !defined(rodic)] | order(poradie asc) { title, slug }`)
+      .then(setStranky);
   }, []);
 
   const linkClass = (path) =>
@@ -26,14 +41,8 @@ function Navbar() {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleMouseEnter = () => {
-    clearTimeout(closeTimer.current);
-    setDropdownOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    closeTimer.current = setTimeout(() => setDropdownOpen(false), 150);
-  };
+  const dropdownClass = "absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-[#0e0e0e]/95 backdrop-blur-sm border border-[#353534]/30 min-w-[280px] shadow-2xl";
+  const dropdownItemClass = "block px-6 py-3 font-headline text-sm text-[#e7bdb6] hover:text-white hover:bg-[#1a1a1a] transition-colors duration-200 border-b border-[#353534]/20 last:border-0 tracking-tight";
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-[#0e0e0e]/90 backdrop-blur-sm z-50 border-b border-[#353534]/10">
@@ -44,26 +53,26 @@ function Navbar() {
         </Link>
         <div className="flex items-center space-x-12">
           <Link className={linkClass('/')} to="/">Info</Link>
-          <Link className={linkClass('/wingtsun')} to="/wingtsun">WingTsun systémy</Link>
-          <div
-            className="relative"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
+          <div className="relative" onMouseEnter={wingtsunDD.onMouseEnter} onMouseLeave={wingtsunDD.onMouseLeave}>
+            <span className={`${linkClass('/wingtsun')} cursor-pointer`}>WingTsun systémy</span>
+            {wingtsunDD.open && stranky.length > 0 && (
+              <div className={dropdownClass}>
+                {stranky.map((s) => (
+                  <Link key={s.slug.current} to={`/wingtsun/${s.slug.current}`} className={dropdownItemClass} onClick={wingtsunDD.close}>
+                    {s.title}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="relative" onMouseEnter={clankyDD.onMouseEnter} onMouseLeave={clankyDD.onMouseLeave}>
             <Link className={linkClass('/clanky')} to="/clanky">Články</Link>
-            {dropdownOpen && clanky.length > 0 && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-[#0e0e0e]/95 backdrop-blur-sm border border-[#353534]/30 min-w-[280px] shadow-2xl">
+            {clankyDD.open && clanky.length > 0 && (
+              <div className={dropdownClass}>
                 {clanky.map((c) => (
-                  <Link
-                    key={c.slug.current}
-                    to={`/clanky/${c.slug.current}`}
-                    className="block px-6 py-3 font-headline text-sm text-[#e7bdb6] hover:text-white hover:bg-[#1a1a1a] transition-colors duration-200 border-b border-[#353534]/20 last:border-0 tracking-tight"
-                    onClick={() => setDropdownOpen(false)}
-                  >
+                  <Link key={c.slug.current} to={`/clanky/${c.slug.current}`} className={dropdownItemClass} onClick={clankyDD.close}>
                     {c.title}
-                    {c.datum && (
-                      <span className="block font-label text-xs text-[#666] mt-0.5">{c.datum}</span>
-                    )}
+                    {c.datum && <span className="block font-label text-xs text-[#666] mt-0.5">{c.datum}</span>}
                   </Link>
                 ))}
               </div>

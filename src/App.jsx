@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import Home from './views/Home';
 import Clanky from './views/Clanky';
 import ClanokDetail from './views/ClanokDetail';
+import StrankaDetail from './views/StrankaDetail';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/clanky" element={<Clanky />} />
         <Route path="/clanky/:slug" element={<ClanokDetail />} />
+        <Route path="/wingtsun/:slug" element={<StrankaDetail />} />
       </Routes>
       <Footer />
     </HashRouter>
