@@ -14,10 +14,10 @@ function useDropdown() {
   };
 }
 
-function PageItem({ page, allPages, onClose, sectionSlug }) {
+function PageItem({ page, onClose, sectionSlug }) {
   const [subOpen, setSubOpen] = useState(false);
   const timer = useRef(null);
-  const subpages = allPages.filter((p) => p.parentId === page._id);
+  const subpages = page.podstranky || [];
 
   return (
     <div
@@ -51,9 +51,9 @@ function PageItem({ page, allPages, onClose, sectionSlug }) {
   );
 }
 
-function SekciaDrop({ sekcia, allPages, isActive }) {
+function SekciaDrop({ sekcia, isActive }) {
   const dd = useDropdown();
-  const pages = allPages.filter((p) => p.sectionId === sekcia._id && !p.parentId);
+  const pages = sekcia.stranky || [];
 
   const baseClass = isActive
     ? 'text-[#be0000] font-bold border-b-2 border-[#be0000] pb-1 font-headline tracking-tight cursor-pointer transition-all duration-200'
@@ -68,7 +68,6 @@ function SekciaDrop({ sekcia, allPages, isActive }) {
             <PageItem
               key={p._id}
               page={p}
-              allPages={allPages}
               onClose={dd.close}
               sectionSlug={sekcia.slug.current}
             />
@@ -83,7 +82,6 @@ function Navbar() {
   const { pathname } = useLocation();
   const [clanky, setClanky] = useState([]);
   const [sekcie, setSekcie] = useState([]);
-  const [allPages, setAllPages] = useState([]);
   const clankyDD = useDropdown();
 
   useEffect(() => {
@@ -91,11 +89,18 @@ function Navbar() {
       .fetch(`*[_type == "clanek" && defined(slug.current)] | order(datum desc) { title, slug, datum }`)
       .then(setClanky);
     client
-      .fetch(`*[_type == "navSekcia" && defined(slug.current)] | order(poradie asc) { _id, title, slug }`)
+      .fetch(`
+        *[_type == "navSekcia" && defined(slug.current)] | order(poradie asc) {
+          _id, title, slug,
+          "stranky": *[_type == "stranka" && sekcia._ref == ^._id && !defined(rodic) && defined(slug.current)] | order(poradie asc) {
+            _id, title, slug,
+            "podstranky": *[_type == "stranka" && rodic._ref == ^._id && defined(slug.current)] | order(poradie asc) {
+              _id, title, slug
+            }
+          }
+        }
+      `)
       .then(setSekcie);
-    client
-      .fetch(`*[_type == "stranka" && defined(slug.current)] | order(poradie asc) { _id, title, slug, "sectionId": sekcia._ref, "parentId": rodic._ref }`)
-      .then(setAllPages);
   }, []);
 
   const linkClass = (path) =>
@@ -123,7 +128,6 @@ function Navbar() {
             <SekciaDrop
               key={s._id}
               sekcia={s}
-              allPages={allPages}
               isActive={pathname.startsWith(`/s/${s.slug.current}`)}
             />
           ))}
