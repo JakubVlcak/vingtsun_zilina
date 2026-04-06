@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import tactileImg from '../images/MAJ_4851a-2e866.jpg';
 import skolaImg from '../images/PB030049-11e866.jpg';
 import ponukaImg from '../images/PB030048-1e866.jpg';
@@ -6,8 +7,17 @@ import hand1 from '../images/hand1.png';
 import hand2 from '../images/hand2.png';
 import hand3 from '../images/hand3.png';
 import hand4 from '../images/hand4.png';
+import client from '../sanityClient';
 
 function Home() {
+  const [kontakt, setKontakt] = useState({ telefon: '0948 20 99 13', email: 'info@umenieboja.sk' });
+
+  useEffect(() => {
+    client.fetch(`*[_type == "kontakt"][0]{ telefon, email }`).then((data) => {
+      if (data) setKontakt(data);
+    });
+  }, []);
+
   return (
     <main className="pt-32 relative overflow-x-hidden">
 
@@ -144,8 +154,8 @@ function Home() {
               <p className="font-body text-on-surface-variant leading-relaxed mb-6">
                 Kontaktujte instruktora skoly a dohovortesa na prvom treningu.
               </p>
-              <a href="tel:0948209913" className="font-label text-sm font-bold tracking-widest text-primary-container hover:text-primary transition-colors uppercase">
-                0948 20 99 13
+              <a href={`tel:${kontakt.telefon?.replace(/\s/g, '')}`} className="font-label text-sm font-bold tracking-widest text-primary-container hover:text-primary transition-colors uppercase">
+                {kontakt.telefon}
               </a>
             </div>
             <div className="p-10 border-r border-outline-variant/20">
@@ -161,8 +171,8 @@ function Home() {
               <p className="font-body text-on-surface-variant leading-relaxed mb-6">
                 Ak sa vo vasom okoli nenachadza nasa skola, ponukame systematicky program vyuky a komplexnu podporu. Staci dat dokopy min. 5 zaujemcov.
               </p>
-              <a href="mailto:info@umenieboja.sk" className="font-label text-sm font-bold tracking-widest text-primary-container hover:text-primary transition-colors uppercase">
-                info@umenieboja.sk
+              <a href={`mailto:${kontakt.email}`} className="font-label text-sm font-bold tracking-widest text-primary-container hover:text-primary transition-colors uppercase">
+                {kontakt.email}
               </a>
             </div>
           </div>
